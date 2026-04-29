@@ -5,14 +5,22 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
   source:
     repoURL: https://github.com/wonjae1230/team-board-ops
     targetRevision: main
     path: charts/team-board
+    helm:
+      valueFiles:
+      - values-prod.yaml
+
   destination:
     server: https://kubernetes.default.svc
     namespace: team-board
+
   syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
     automated:
       selfHeal: true
       prune: true
