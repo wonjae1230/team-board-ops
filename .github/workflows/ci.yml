@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+
+    - name: Helm lint
+      run: helm lint charts/team-board -f charts/team-board/values-prod.yaml
+
+    - name: Helm template
+      run: helm template team-board charts/team-board -f charts/team-board/values-prod.yaml
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v4
+
+    - name: kubectl dry-run (k8s manifests)
+      run: kubectl apply --dry-run=client -f k8s/
